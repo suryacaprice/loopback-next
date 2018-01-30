@@ -3,9 +3,10 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {Application, ApplicationConfig} from '@loopback/core';
-import {RestComponent} from '@loopback/rest';
-import {TodoController} from './controllers';
+import {Application, ApplicationConfig, BootOptions} from '@loopback/core';
+import {Context} from '@loopback/context';
+import {BootComponent} from '@loopback/boot';
+import {RestApplication} from '@loopback/rest';
 import {TodoRepository} from './repositories';
 import {db} from './datasources/db.datasource';
 /* tslint:disable:no-unused-imports */
@@ -18,7 +19,7 @@ import {
   RepositoryMixin,
 } from '@loopback/repository';
 /* tslint:enable:no-unused-imports */
-export class TodoApplication extends RepositoryMixin(Application) {
+export class TodoApplication extends RepositoryMixin(RestApplication) {
   constructor(options?: ApplicationConfig) {
     // TODO(bajtos) The comment below does not make sense to me.
     // Consumers of TodoApplication object should not be changing the shape
@@ -27,17 +28,15 @@ export class TodoApplication extends RepositoryMixin(Application) {
     // which database to connect to, etc.
     // See https://github.com/strongloop/loopback-next/issues/742
 
-    // Allow options to replace the defined components array, if desired.
-    options = Object.assign(
-      {},
-      {
-        components: [RestComponent],
-      },
-      options,
-    );
     super(options);
+    this.component(BootComponent);
     this.setupRepositories();
-    this.setupControllers();
+  }
+
+  async boot(bootOptions?: BootOptions): Promise<Context> {
+    if (!bootOptions) bootOptions = {projectRoot: __dirname};
+    if (!bootOptions.projectRoot) bootOptions.projectRoot = __dirname;
+    return await super.boot(bootOptions);
   }
 
   // Helper functions (just to keep things organized)
@@ -53,10 +52,5 @@ export class TodoApplication extends RepositoryMixin(Application) {
     // See https://github.com/strongloop/loopback-next/issues/743
     this.bind('datasource').to(datasource);
     this.repository(TodoRepository);
-  }
-
-  setupControllers() {
-    // TODO(bajtos) Automate controller registration via @loopback/boot
-    this.controller(TodoController);
   }
 }

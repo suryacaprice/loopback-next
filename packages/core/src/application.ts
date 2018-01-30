@@ -7,6 +7,8 @@ import {Context, Binding, BindingScope, Constructor} from '@loopback/context';
 import {Server} from './server';
 import {Component, mountComponent} from './component';
 import {CoreBindings} from './keys';
+import {resolve} from 'path';
+import {Booter, BootOptions} from './booter';
 
 /**
  * Application is the container for various types of artifacts, such as
@@ -61,9 +63,74 @@ export class Application extends Context {
    */
   controller(controllerCtor: ControllerClass, name?: string): Binding {
     name = name || controllerCtor.name;
-    return this.bind(`controllers.${name}`)
+    return this.bind(`${CoreBindings.CONTROLLERS}.${name}`)
       .toClass(controllerCtor)
-      .tag('controller');
+      .tag(CoreBindings.CONTROLLERS_TAG);
+  }
+
+  /**
+   * Register a booter class / array of classes with this application.
+   *
+   * @param booterCls {Function | Function[]} The booter class (constructor function).
+   * @param {string=} name Optional booter name, defaults to the class name.
+   * Ignored is cls is an Array and the name defaults to the class name.
+   * @return {Binding | Binding[]} The newly created binding(s), you can use the
+   * reference to further modify the binding, e.g. lock the value to prevent
+   * further modifications.
+   *
+   * ```ts
+   * class MyBooter implements Booter {}
+   * app.booter(MyBooter);
+   * ```
+   */
+  booter(booterCls: Constructor<Booter>, name?: string): Binding;
+  booter(booterCls: Constructor<Booter>[]): Binding[];
+  booter(
+    booterCls: Constructor<Booter> | Constructor<Booter>[],
+    name?: string,
+    // tslint:disable-next-line:no-any
+  ): any {
+    if (Array.isArray(booterCls)) {
+      return booterCls.map(cls => this._bindBooter(cls));
+    } else {
+      return this._bindBooter(booterCls, name);
+    }
+  }
+
+  /**
+   *
+   * @param booterCls Constructor<Booter> A Booter Class
+   * @param [name] Name the Booter Class should be bound to
+   */
+  private _bindBooter<T extends Booter>(
+    booterCls: Constructor<T>,
+    name?: string,
+  ): Binding {
+    name = name || booterCls.name;
+    return this.bind(`${CoreBindings.BOOTER_PREFIX}.${name}`)
+      .toClass(booterCls)
+      .inScope(BindingScope.CONTEXT)
+      .tag(CoreBindings.BOOTER_TAG);
+  }
+
+  /**
+   * Function is responsible for calling all registered Booter classes that
+   * are bound to the Application instance. Each phase of an instance must
+   * complete before the next phase is started.
+   * @param {BootOptions} bootOptions Options for boot. Bound for Booters to
+   * receive via Dependency Injection.
+   */
+  async boot(bootOptions: BootOptions): Promise<Context> {
+    try {
+      const bootstrapper = await this.get(CoreBindings.BOOT_STRAPPER);
+      return await bootstrapper.boot(bootOptions);
+    } catch (err) {
+      throw new Error(
+        `A Bootstrapper needs to be bound to ${
+          CoreBindings.BOOT_STRAPPER
+        } to use app.boot()`,
+      );
+    }
   }
 
   /**
