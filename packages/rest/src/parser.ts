@@ -13,6 +13,8 @@ import {
   PathParameterValues,
 } from './internal-types';
 import {ResolvedRoute} from './router/routing-table';
+import {deserialize} from './deserializer';
+
 type HttpError = HttpErrors.HttpError;
 
 // tslint:disable-next-line:no-any
@@ -102,21 +104,23 @@ function buildOperationArguments(
       throw new Error('$ref parameters are not supported yet.');
     }
     const spec = paramSpec as ParameterObject;
+    // tslint:disable-next-line:no-any
+    const addArg = (val: any) => args.push(deserialize(val, spec));
     switch (spec.in) {
       case 'query':
-        args.push(request.query[spec.name]);
+        addArg(request.query[spec.name]);
         break;
       case 'path':
-        args.push(pathParams[spec.name]);
+        addArg(pathParams[spec.name]);
         break;
       case 'header':
-        args.push(request.headers[spec.name.toLowerCase()]);
+        addArg(request.headers[spec.name.toLowerCase()]);
         break;
       case 'formData':
-        args.push(body ? body[spec.name] : undefined);
+        addArg(body ? body[spec.name] : undefined);
         break;
       case 'body':
-        args.push(body);
+        addArg(body);
         break;
       default:
         throw new HttpErrors.NotImplemented(
