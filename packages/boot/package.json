@@ -3,16 +3,15 @@
   "version": "4.0.0-alpha.1",
   "description": "A collection of Booters for LoopBack 4 Applications",
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "scripts": {
     "acceptance": "lb-mocha \"DIST/test/acceptance/**/*.js\"",
-    "build": "npm run build:dist && npm run build:dist6",
+    "build": "npm run build:dist",
     "build:current": "lb-tsc",
     "build:dist": "lb-tsc es2017",
-    "build:dist6": "lb-tsc es2015",
     "build:apidocs": "lb-apidocs",
-    "clean": "lb-clean loopback-boot*.tgz dist dist6 package api-docs",
+    "clean": "lb-clean loopback-boot*.tgz dist package api-docs",
     "prepublishOnly": "npm run build && npm run build:apidocs",
     "pretest": "npm run build:current",
     "integration": "lb-mocha \"DIST/test/integration/**/*.js\"",
@@ -26,8 +25,7 @@
     "@loopback/context": "^4.0.0-alpha.27",
     "@loopback/core": "^4.0.0-alpha.29",
     "debug": "^3.1.0",
-    "glob": "^7.1.2",
-    "util.promisify": "^1.0.0"
+    "glob": "^7.1.2"
   },
   "devDependencies": {
     "@loopback/build": "^4.0.0-alpha.10",
@@ -42,7 +40,6 @@
     "index.js",
     "index.d.ts",
     "dist/src",
-    "dist6/src",
     "api-docs",
     "src"
   ],

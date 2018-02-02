@@ -4,7 +4,7 @@
     "src/booters/booter-utils.ts",
     "src/booters/controller.booter.ts",
     "src/booters/index.ts",
-    "src/boot-strapper.ts",
+    "src/bootstrapper.ts",
     "src/boot.component.ts",
     "src/index.ts",
     "src/keys.ts"

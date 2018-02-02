@@ -4,8 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {Constructor} from '@loopback/context';
-import * as util from 'util';
-const promisify = util.promisify || require('util.promisify/implementation');
+import {promisify} from 'util';
 const glob = promisify(require('glob'));
 
 /**
