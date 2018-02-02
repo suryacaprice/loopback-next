@@ -6,7 +6,7 @@
 import {expect} from '@loopback/testlab';
 import {Application, Booter, CoreBindings} from '@loopback/core';
 import {Binding, Context} from '@loopback/context';
-import {BootComponent, BootBindings, BootStrapper} from '../../index';
+import {BootComponent, BootBindings, Bootstrapper} from '../../index';
 
 describe('boot.component unit tests', () => {
   let app: Application;
@@ -16,8 +16,8 @@ describe('boot.component unit tests', () => {
   beforeEach(getBootComponent);
 
   it('binds BootStrapper class', async () => {
-    const bootstrapper = await app.get(CoreBindings.BOOT_STRAPPER);
-    expect(bootstrapper).to.be.instanceOf(BootStrapper);
+    const bootstrapper = await app.get(CoreBindings.BOOTSTRAPPER);
+    expect(bootstrapper).to.be.instanceOf(Bootstrapper);
   });
 
   function getApp() {

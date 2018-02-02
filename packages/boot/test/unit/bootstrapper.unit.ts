@@ -5,11 +5,11 @@
 
 import {expect} from '@loopback/testlab';
 import {Application, Booter, CoreBindings} from '@loopback/core';
-import {BootStrapper} from '../../index';
+import {Bootstrapper} from '../../index';
 
 describe('boot-strapper unit tests', () => {
   let app: Application;
-  let bootstrapper: BootStrapper;
+  let bootstrapper: Bootstrapper;
   const booterKey = `${CoreBindings.BOOTER_PREFIX}.TestBooter`;
   const booterKey2 = `${CoreBindings.BOOTER_PREFIX}.TestBooter2`;
 
@@ -72,7 +72,7 @@ describe('boot-strapper unit tests', () => {
   }
 
   function getBootStrapper() {
-    bootstrapper = new BootStrapper(app);
+    bootstrapper = new Bootstrapper(app);
   }
 
   class TestBooter implements Booter {

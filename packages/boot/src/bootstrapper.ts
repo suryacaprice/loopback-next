@@ -24,7 +24,16 @@ import {BootBindings} from './keys';
 import * as debugModule from 'debug';
 const debug = debugModule('loopback:boot:bootstrapper');
 
-export class BootStrapper {
+/**
+ * The Bootstrapper class provides the `boot` function that is responsible for
+ * finding and executing the Booters in an application based on given options.
+ *
+ * NOTE: Bootstrapper should be bound as a SINGLETON so it can be cached as
+ * it does not maintain any state of it's own.
+ *
+ * @param app Appliaction instance
+ */
+export class Bootstrapper {
   constructor(
     @inject(CoreBindings.APPLICATION_INSTANCE) private app: Application,
   ) {}
@@ -35,6 +44,12 @@ export class BootStrapper {
    * complete before the next phase is started.
    * @param {BootOptions} bootOptions Options for boot. Bound for Booters to
    * receive via Dependency Injection.
+   * @param {Context} [ctx] Optional Context to use to resolve bindings. This is
+   * primarily useful when running app.boot() again but with different settings
+   * (in particular phases) such as 'start' / 'stop'. Using a returned Context from
+   * a previous boot call allows DI to retrieve the same instances of Booters previously
+   * used as they are bound using a CONTEXT scope. This is important as Booter instances
+   * may maintain state.
    */
   async boot(bootOptions: BootOptions, ctx?: Context): Promise<Context> {
     if (!bootOptions.projectRoot) {
@@ -58,7 +73,7 @@ export class BootStrapper {
     // and then resolving the bindings to get instances.
     const bindings = bootCtx.findByTag(CoreBindings.BOOTER_TAG);
     const booterInsts = await resolveList(bindings, binding =>
-      Promise.resolve(bootCtx.get(binding.key)),
+      bootCtx.get(binding.key),
     );
 
     // Determine the phases to be run. If a user set a phases filter, those
@@ -79,14 +94,13 @@ export class BootStrapper {
     // Run phases of booters
     for (const phase of phases) {
       for (const inst of booterInsts) {
-        // Run phases if instance name is whitelisted.
-        // NOTE: Might need to polyfill .includes()
-        if (names.includes(inst.constructor.name)) {
+        const instName = inst.constructor.name;
+        if (names.includes(instName)) {
           if (inst[phase]) {
             await inst[phase]();
-            debug(`${inst.constructor.name} phase: ${phase} complete.`);
+            debug(`${instName} phase: ${phase} complete.`);
           } else {
-            debug(`${inst.constructor.name} phase: ${phase} not implemented.`);
+            debug(`${instName} phase: ${phase} not implemented.`);
           }
         }
       }

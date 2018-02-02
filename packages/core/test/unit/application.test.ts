@@ -42,18 +42,18 @@ describe('Application', () => {
     it('throws an error if .boot() is called without a BootComponent bound', async () => {
       await expect(app.boot(bootOptions)).to.be.rejectedWith(
         `A Bootstrapper needs to be bound to ${
-          CoreBindings.BOOT_STRAPPER
+          CoreBindings.BOOTSTRAPPER
         } to use app.boot()`,
       );
     });
 
     it('calls .boot() if a BootComponent is bound', async () => {
       app
-        .bind(CoreBindings.BOOT_STRAPPER)
+        .bind(CoreBindings.BOOTSTRAPPER)
         .toClass(FakeBootComponent)
         .inScope(BindingScope.SINGLETON);
       await app.boot(bootOptions);
-      const bootComponent = await app.get(CoreBindings.BOOT_STRAPPER);
+      const bootComponent = await app.get(CoreBindings.BOOTSTRAPPER);
       expect(bootComponent.bootCalled).to.be.True();
     });
   });

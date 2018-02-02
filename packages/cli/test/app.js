@@ -27,11 +27,11 @@ describe('app-generator specfic files', () => {
     assert.file('src/application.ts');
     assert.fileContent(
       'src/application.ts',
-      /class MyAppApplication extends Application/
+      /class MyAppApplication extends RestApplication/
     );
     assert.fileContent('src/application.ts', /constructor\(/);
     assert.fileContent('src/application.ts', /async start\(/);
-    assert.fileContent('src/application.ts', /RestComponent/);
+    assert.fileContent('src/application.ts', /BootComponent/);
 
     assert.file('src/index.ts');
     assert.fileContent('src/index.ts', /new MyAppApplication/);
@@ -48,7 +48,10 @@ describe('app-generator specfic files', () => {
       /@get\('\/ping'\)/
     );
     assert.fileContent('src/controllers/ping.controller.ts', /ping\(\)/);
-    assert.fileContent('src/controllers/ping.controller.ts', /\'\@loopback\/openapi\-v2\'/);
+    assert.fileContent(
+      'src/controllers/ping.controller.ts',
+      /\'\@loopback\/openapi\-v2\'/
+    );
 
     assert.file;
   });

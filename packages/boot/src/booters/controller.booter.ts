@@ -19,6 +19,9 @@ import {
  * artifacts for LoopBack 4 Applications.
  *
  * It supports the following boot phases: config, discover, boot
+ *
+ * @param app Application instance
+ * @param bootConfig Config options for boot
  */
 export class ControllerBooter implements Booter {
   options: ControllerOptions;
@@ -27,11 +30,6 @@ export class ControllerBooter implements Booter {
   extensions: string[];
   discovered: string[];
 
-  /**
-   *
-   * @param app Application instance
-   * @param bootConfig Config options for boot
-   */
   constructor(
     @inject(CoreBindings.APPLICATION_INSTANCE) public app: Application,
     @inject(BootBindings.BOOT_OPTIONS) public bootConfig: BootOptions,
@@ -105,8 +103,8 @@ export class ControllerBooter implements Booter {
  * files in dirs. Defaults to ['.controller.js']
  * @param nested Boolean to control if artifact discovery should check nested
  * folders or not. Default to true
- * @param discovered  An array of discovered files. This is set by the
- * discover phase.
+ * @param glob  A `glob` string to use when searching for files. This takes
+ * precendence over other options.
  */
 export type ControllerOptions = {
   dirs: string | string[];

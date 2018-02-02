@@ -10,7 +10,7 @@ import {resolve} from 'path';
 describe('controller booter acceptance tests', () => {
   // tslint:disable-next-line:no-any
   let app: any;
-  const SANDBOX_PATH = resolve(__dirname, '../sandbox');
+  const SANDBOX_PATH = resolve(__dirname, '../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
   beforeEach(resetSandbox);

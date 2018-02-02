@@ -9,7 +9,7 @@ import {ControllerBooter, ControllerDefaults} from '../../../index';
 import {resolve, relative} from 'path';
 
 describe('controller booter unit tests', () => {
-  const SANDBOX_PATH = resolve(__dirname, '../../sandbox');
+  const SANDBOX_PATH = resolve(__dirname, '../../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
   let app: Application;
@@ -92,11 +92,11 @@ describe('controller booter unit tests', () => {
   describe('ControllerBooter.discover()', () => {
     it('discovers correct files based on ControllerDefaults', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/nested/two.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -118,7 +118,7 @@ describe('controller booter unit tests', () => {
 
     it('discovers correct files based on a glob pattern', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'ctrl/hello.ctrl.js',
       );
 
@@ -138,11 +138,11 @@ describe('controller booter unit tests', () => {
 
     it('discovers files without going into nested folders', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/nested/two.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -163,11 +163,11 @@ describe('controller booter unit tests', () => {
 
     it('discovers files of specified extensions', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/two.ctrl.js',
       );
       const bootOptions: BootOptions = {
@@ -186,7 +186,7 @@ describe('controller booter unit tests', () => {
 
     it('discovers files in specified directory', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'ctrl/hello.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -205,11 +205,11 @@ describe('controller booter unit tests', () => {
 
     it('discovers files of multiple extensions', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.ctrl.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/two.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -231,11 +231,11 @@ describe('controller booter unit tests', () => {
 
     it('discovers files in multiple directories', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'ctrl/hello.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/two.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -273,7 +273,7 @@ describe('controller booter unit tests', () => {
 
     it('discovers no files of an invalid extension', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/two.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -309,7 +309,7 @@ describe('controller booter unit tests', () => {
   describe('ControllerBooter.load()', () => {
     it('binds a controller from discovered file', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.controller.js',
       );
       const bootOptions: BootOptions = {
@@ -331,19 +331,19 @@ describe('controller booter unit tests', () => {
 
     it('binds controllers from multiple files', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js'),
+        resolve(__dirname, '../../fixtures/hello.controller.js'),
         'controllers/hello.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/hello.controller.js.map'),
+        resolve(__dirname, '../../fixtures/hello.controller.js.map'),
         'controllers/hello.controller.js.map',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/nested/two.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js.map'),
+        resolve(__dirname, '../../fixtures/two.controller.js.map'),
         'controllers/nested/two.controller.js.map',
       );
       const bootOptions: BootOptions = {
@@ -370,11 +370,11 @@ describe('controller booter unit tests', () => {
 
     it('binds multiple controllers from a file', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js'),
+        resolve(__dirname, '../../fixtures/two.controller.js'),
         'controllers/two.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/two.controller.js.map'),
+        resolve(__dirname, '../../fixtures/two.controller.js.map'),
         'controllers/two.controller.js.map',
       );
       const bootOptions: BootOptions = {
@@ -399,11 +399,11 @@ describe('controller booter unit tests', () => {
 
     it('does not throw on an empty file', async () => {
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/empty.controller.js'),
+        resolve(__dirname, '../../fixtures/empty.controller.js'),
         'controllers/empty.controller.js',
       );
       await sandbox.copyFile(
-        resolve(SANDBOX_PATH, '../fixtures/empty.controller.js.map'),
+        resolve(__dirname, '../../fixtures/empty.controller.js.map'),
         'controllers/empty.controller.js.map',
       );
       const bootOptions: BootOptions = {

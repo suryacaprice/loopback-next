@@ -28,7 +28,7 @@ export namespace CoreBindings {
   export const CONTROLLERS_TAG = 'controller';
 
   // Key for Binding the BootStrapper Class
-  export const BOOT_STRAPPER = 'application.bootstrapper';
+  export const BOOTSTRAPPER = 'application.bootstrapper';
   export const BOOTER_TAG = 'booter';
   export const BOOTER_PREFIX = 'booters';
 

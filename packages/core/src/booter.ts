@@ -17,8 +17,17 @@ import {Constructor} from '@loopback/context';
  * @interface Booter
  */
 export interface Booter {
+  /**
+   * Configure phase of the Booter. It should set options / defaults in this phase.
+   */
   configure?(): Promise<void>;
+  /**
+   * Discover phase of the Booter. It should search for artifacts in this phase.
+   */
   discover?(): Promise<void>;
+  /**
+   * Load phase of the Booter. It should bind the artifacts in this phase.
+   */
   load?(): Promise<void>;
 }
 
@@ -29,20 +38,38 @@ export interface Booter {
 export const BOOTER_PHASES = ['configure', 'discover', 'load'];
 
 /**
- * Type Object for Options passed into .boot().
+ * Type Object for Options passed into .boot()
  *
- * projectRoot => Root of project. All other artifacts are resolved relative to this
- * phases => An array of phases that should be executed.
- * [prop: string]: any => Any options as defined by a Booter.
+ * @property projectRoot Root of project. All other artifacts are resolved relative to this
+ * @property booters An array of booters to bind to the application before running bootstrapper
+ * @property filter.booters An array of booters that should be run by the bootstrapper
+ * @property filter.phases An array of phases that should be run
  */
 export type BootOptions = {
+  /**
+   * Root of the project. All other artifacts are resolved relative to this.
+   */
   projectRoot: string;
+  /**
+   * Optional array of Booter Classes to bind to the application before running bootstrapper.
+   */
   booters?: Constructor<Booter>[];
-  phases?: string[];
+  /**
+   * Filter Object for Bootstrapper
+   */
   filter?: {
+    /**
+     * Names of booters that should be run by Bootstrapper
+     */
     booters?: string[];
+    /**
+     * Names of phases that should be run by Bootstrapper
+     */
     phases?: string[];
   };
+  /**
+   * Additional Properties
+   */
   // tslint:disable-next-line:no-any
   [prop: string]: any;
 };

@@ -15,6 +15,7 @@ const glob = promisify(require('glob'));
  * @param extensions An array of extensions to search for
  * @param nested A boolean to determine if nested folders in dirs should be searched
  * @param root Root folder to resolve dirs relative to
+ * @returns {string[]} Array of discovered files
  */
 export async function discoverFiles(
   dirs: string[],
@@ -34,6 +35,7 @@ export async function discoverFiles(
  *
  * @param pattern A glob pattern
  * @param root Root folder to start searching for matching files
+ * @returns {string[]} Array of discovered files
  */
 export async function discoverFilesWithGlob(
   pattern: string,
@@ -43,21 +45,35 @@ export async function discoverFilesWithGlob(
 }
 
 /**
+ * Given a function, returns true if it is a class, false otherwise.
+ *
+ * @param target The function to check if it's a class or not.
+ * @returns {boolean} True if target is a class. False otherwise.
+ */
+// tslint:disable-next-line:no-any
+export function isClass(target: Constructor<any>): boolean {
+  return (
+    typeof target === 'function' && target.toString().indexOf('class') === 0
+  );
+}
+
+/**
  * Returns an Array of Classes from given files
  *
  * @param files An array of string of absolute file paths
+ * @returns {Promise<Array<Constructor<any>>>} An array of Class Construtors from a file
  */
 // tslint:disable-next-line:no-any
-export async function loadClassesFromFiles(files: string[]): Promise<any[]> {
+export async function loadClassesFromFiles(
+  files: string[],
   // tslint:disable-next-line:no-any
-  const classes: Constructor<any>[] = [];
+): Promise<Array<Constructor<any>>> {
+  // tslint:disable-next-line:no-any
+  const classes: Array<Constructor<any>> = [];
   files.forEach(file => {
     const ctrl = require(file);
     Object.keys(ctrl).forEach(cls => {
-      if (
-        typeof ctrl[cls] === 'function' &&
-        ctrl[cls].toString().indexOf('class') === 0
-      ) {
+      if (isClass(ctrl[cls])) {
         classes.push(ctrl[cls]);
       }
     });

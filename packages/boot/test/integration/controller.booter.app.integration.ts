@@ -10,7 +10,7 @@ import {ControllerBooter, ControllerDefaults} from '../../index';
 import {resolve} from 'path';
 
 describe('controller booter intengration tests', () => {
-  const SANDBOX_PATH = resolve(__dirname, '../sandbox');
+  const SANDBOX_PATH = resolve(__dirname, '../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
   // tslint:disable-next-line:no-any

@@ -48,10 +48,10 @@ export class Application extends Context {
   /**
    * Register a controller class with this application.
    *
-   * @param controllerCtor {Function} The controller class
-   * (constructor function).
+   * @param {Function} controllerCtor The controller class
+   * (constructor function)
    * @param {string=} name Optional controller name, default to the class name
-   * @return {Binding} The newly created binding, you can use the reference to
+   * @returns {Binding} The newly created binding, you can use the reference to
    * further modify the binding, e.g. lock the value to prevent further
    * modifications.
    *
@@ -71,10 +71,10 @@ export class Application extends Context {
   /**
    * Register a booter class / array of classes with this application.
    *
-   * @param booterCls {Function | Function[]} The booter class (constructor function).
+   * @param {Function | Function[]} booterCls The booter class (constructor function).
    * @param {string=} name Optional booter name, defaults to the class name.
    * Ignored is cls is an Array and the name defaults to the class name.
-   * @return {Binding | Binding[]} The newly created binding(s), you can use the
+   * @returns {Binding | Binding[]} The newly created binding(s), you can use the
    * reference to further modify the binding, e.g. lock the value to prevent
    * further modifications.
    *
@@ -99,8 +99,9 @@ export class Application extends Context {
 
   /**
    *
-   * @param booterCls Constructor<Booter> A Booter Class
-   * @param [name] Name the Booter Class should be bound to
+   * @param booterCls A Booter Class
+   * @param {string} name Name the Booter Class should be bound to
+   * @returns {Binding} The newly created Binding
    */
   private _bindBooter<T extends Booter>(
     booterCls: Constructor<T>,
@@ -119,15 +120,17 @@ export class Application extends Context {
    * complete before the next phase is started.
    * @param {BootOptions} bootOptions Options for boot. Bound for Booters to
    * receive via Dependency Injection.
+   * @param {Context} [ctx] Optional context to use for running the bootstrapper.
+   * @returns {Promise<Context>} The Context used to run boot
    */
-  async boot(bootOptions: BootOptions): Promise<Context> {
+  async boot(bootOptions: BootOptions, ctx?: Context): Promise<Context> {
     try {
-      const bootstrapper = await this.get(CoreBindings.BOOT_STRAPPER);
+      const bootstrapper = await this.get(CoreBindings.BOOTSTRAPPER);
       return await bootstrapper.boot(bootOptions);
     } catch (err) {
       throw new Error(
         `A Bootstrapper needs to be bound to ${
-          CoreBindings.BOOT_STRAPPER
+          CoreBindings.BOOTSTRAPPER
         } to use app.boot()`,
       );
     }

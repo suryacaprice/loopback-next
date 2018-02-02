@@ -4,6 +4,6 @@
 // License text available at https://opensource.org/licenses/MIT
 
 export * from './booters';
-export * from './boot-strapper';
+export * from './bootstrapper';
 export * from './boot.component';
 export * from './keys';

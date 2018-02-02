@@ -3,20 +3,30 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {BootStrapper} from './boot-strapper';
+import {Bootstrapper} from './bootstrapper';
 import {Component, Application, CoreBindings} from '@loopback/core';
 import {inject, BindingScope} from '@loopback/context';
 import {ControllerBooter} from './booters';
 
+/**
+ * BootComponent is used to export the default list of Booter's made
+ * available by this module as well as bind the BootStrapper to the app so it
+ * can be used to run the Booters.
+ */
 export class BootComponent implements Component {
   // Export a list of default booters in the component so they get bound
   // automatically when this component is mounted.
   booters = [ControllerBooter];
 
+  /**
+   *
+   * @param app Application instance
+   */
   constructor(@inject(CoreBindings.APPLICATION_INSTANCE) app: Application) {
+    // Bound as a SINGLETON so it can be cached as it has no state
     app
-      .bind(CoreBindings.BOOT_STRAPPER)
-      .toClass(BootStrapper)
+      .bind(CoreBindings.BOOTSTRAPPER)
+      .toClass(Bootstrapper)
       .inScope(BindingScope.SINGLETON);
   }
 }
