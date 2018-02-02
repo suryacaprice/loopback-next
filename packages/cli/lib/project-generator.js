@@ -11,6 +11,9 @@ module.exports = class ProjectGenerator extends BaseGenerator {
   // Note: arguments and options should be defined in the constructor.
   constructor(args, opts) {
     super(args, opts);
+    // The default list of build options available for a project
+    // This list gets shown to users to let them select the appropriate
+    // build settings for their project.
     this.buildOptions = ['tslint', 'prettier', 'mocha', 'loopbackBuild'];
   }
 
