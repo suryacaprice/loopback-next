@@ -4,4 +4,5 @@
 // License text available at https://opensource.org/licenses/MIT
 
 export * from './controller.booter';
+export * from './repository.booter';
 export * from './booter-utils';

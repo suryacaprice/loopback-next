@@ -13,6 +13,7 @@
     "@commitlint/cli": "^6.0.2",
     "@commitlint/config-conventional": "^6.0.2",
     "@commitlint/config-lerna-scopes": "^6.0.2",
+    "@loopback/repository": "^4.0.0-alpha.28",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.5.9",
     "coveralls": "^3.0.0",
