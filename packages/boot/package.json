@@ -32,6 +32,7 @@
   "devDependencies": {
     "@loopback/build": "^4.0.0-alpha.10",
     "@loopback/openapi-v2": "^4.0.0-alpha.3",
+    "@loopback/repository": "^4.0.0-alpha.29",
     "@loopback/rest": "^4.0.0-alpha.18",
     "@loopback/testlab": "^4.0.0-alpha.20"
   },

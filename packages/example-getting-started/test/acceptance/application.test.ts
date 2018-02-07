@@ -13,14 +13,15 @@ describe('Application', () => {
 
   before(givenAnApplication);
   before(givenARestServer);
-  before(givenTodoRepository);
   before(async () => {
     await app.boot();
     await app.start();
   });
+  before(givenTodoRepository);
   before(() => {
     client = createClientForHandler(server.handleHttp);
   });
+
   after(async () => {
     await app.stop();
   });

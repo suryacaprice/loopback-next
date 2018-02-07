@@ -5,9 +5,12 @@
 
 import {RestApplication} from '@loopback/rest';
 import {ApplicationConfig, BootOptions} from '@loopback/core';
+// Class and Repository imports are required to avoid compiler errors.
+// tslint:disable-next-line:no-unused-variable
+import {RepositoryMixin, Class, Repository} from '@loopback/repository';
 import {BootComponent} from '../../index';
 
-export class ControllerBooterApp extends RestApplication {
+export class ControllerBooterApp extends RepositoryMixin(RestApplication) {
   constructor(options?: ApplicationConfig) {
     super(options);
     this.component(BootComponent);

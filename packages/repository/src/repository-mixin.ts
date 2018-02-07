@@ -6,7 +6,8 @@
 import {Class} from './common-types';
 import {Repository} from './repository';
 
-// tslint:disable:no-any
+export const REPOSITORIES_PREFIX = 'repositories';
+export const REPOSITORIES_TAG = 'repository';
 
 /**
  * A mixin class for Application that creates a .repository()
@@ -18,9 +19,11 @@ import {Repository} from './repository';
  * class MyApplication extends RepositoryMixin(Application) {}
  * ```
  */
+// tslint:disable-next-line:no-any
 export function RepositoryMixin<T extends Class<any>>(superClass: T) {
   return class extends superClass {
     // A mixin class has to take in a type any[] argument!
+    // tslint:disable-next-line:no-any
     constructor(...args: any[]) {
       super(...args);
       if (!this.options) this.options = {};
@@ -66,9 +69,12 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * app.repository(NoteRepo);
      * ```
      */
+    // tslint:disable-next-line:no-any
     repository(repo: Class<Repository<any>>) {
-      const repoKey = `repositories.${repo.name}`;
-      this.bind(repoKey).toClass(repo);
+      const repoKey = `${REPOSITORIES_PREFIX}.${repo.name}`;
+      this.bind(repoKey)
+        .toClass(repo)
+        .tag(REPOSITORIES_TAG);
     }
 
     /**
@@ -91,7 +97,7 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * app.component(ProductComponent);
      * ```
      */
-    public component(component: Class<any>) {
+    public component(component: Class<{}>) {
       super.component(component);
       this.mountComponentRepository(component);
     }
@@ -103,7 +109,7 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      *
      * @param component The component to mount repositories of
      */
-    mountComponentRepository(component: Class<any>) {
+    mountComponentRepository(component: Class<{}>) {
       const componentKey = `components.${component.name}`;
       const compInstance = this.getSync(componentKey);
 

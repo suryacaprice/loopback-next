@@ -7,13 +7,14 @@ import {Client, createClientForHandler, TestSandbox} from '@loopback/testlab';
 import {RestServer} from '@loopback/rest';
 import {resolve} from 'path';
 import {ControllerBooterApp} from '../fixtures/application';
+import {resetSandbox} from '../utils';
 
 describe('controller booter acceptance tests', () => {
   let app: ControllerBooterApp;
   const SANDBOX_PATH = resolve(__dirname, '../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
-  beforeEach(resetSandbox);
+  beforeEach(() => resetSandbox(sandbox));
   beforeEach(getApp);
 
   afterEach(stopApp);
@@ -56,9 +57,5 @@ describe('controller booter acceptance tests', () => {
     } catch (err) {
       console.log(`Stopping the app threw an error: ${err}`);
     }
-  }
-
-  async function resetSandbox() {
-    await sandbox.reset();
   }
 });

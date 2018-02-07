@@ -6,7 +6,6 @@
 import {ApplicationConfig, BootOptions} from '@loopback/core';
 import {RestApplication} from '@loopback/rest';
 import {BootComponent} from '@loopback/boot';
-import {TodoRepository} from './repositories';
 import {db} from './datasources/db.datasource';
 /* tslint:disable:no-unused-variable */
 // Class and Repository imports required to infer types in consuming code!
@@ -29,7 +28,7 @@ export class TodoApplication extends RepositoryMixin(RestApplication) {
 
     super(options);
     this.component(BootComponent);
-    this.setupRepositories();
+    this.setupDatasources();
   }
 
   async boot(): Promise<void> {
@@ -38,7 +37,7 @@ export class TodoApplication extends RepositoryMixin(RestApplication) {
   }
 
   // Helper functions (just to keep things organized)
-  setupRepositories() {
+  setupDatasources() {
     // TODO(bajtos) Automate datasource and repo registration via @loopback/boot
     // See https://github.com/strongloop/loopback-next/issues/441
     const datasource =
@@ -49,6 +48,5 @@ export class TodoApplication extends RepositoryMixin(RestApplication) {
     // (app.dataSource() is not implemented there yet)
     // See https://github.com/strongloop/loopback-next/issues/743
     this.bind('datasource').to(datasource);
-    this.repository(TodoRepository);
   }
 }

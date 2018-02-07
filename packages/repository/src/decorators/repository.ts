@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import {Model, Entity} from '../model';
 import {Repository} from '../repository';
 import {DataSource} from '../datasource';
+import {REPOSITORIES_PREFIX} from '../repository-mixin';
 import {
   DefaultCrudRepository,
   DataSourceConstructor,
@@ -105,7 +106,11 @@ export function repository<T extends Model>(
         // Please note key is undefined for constructor. If strictNullChecks
         // is true, the compiler will complain as reflect-metadata won't
         // accept undefined or null for key. Use ! to fool the compiler.
-        inject('repositories.' + meta.name, meta)(target, key!, descriptor);
+        inject(REPOSITORIES_PREFIX + '.' + meta.name, meta)(
+          target,
+          key!,
+          descriptor,
+        );
       } else {
         // Use repository-factory to create a repository from model + dataSource
         // inject('repository-factory', meta)(target, key!, descriptor);

@@ -4,7 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {expect, TestSandbox} from '@loopback/testlab';
-import {CoreBindings} from '@loopback/core';
+import {REPOSITORIES_PREFIX, REPOSITORIES_TAG} from '@loopback/repository';
 import {resolve} from 'path';
 import {ControllerBooterApp} from '../fixtures/application';
 import {resetSandbox} from '../utils';
@@ -19,15 +19,13 @@ describe('controller booter integration tests', () => {
 
   it('boots controllers when app.boot() is called', async () => {
     const expectedBindings = [
-      `${CoreBindings.CONTROLLERS_PREFIX}.ControllerOne`,
-      `${CoreBindings.CONTROLLERS_PREFIX}.ControllerTwo`,
+      `${REPOSITORIES_PREFIX}.ControllerOne`,
+      `${REPOSITORIES_PREFIX}.ControllerTwo`,
     ];
 
     await app.boot();
 
-    const bindings = app
-      .findByTag(CoreBindings.CONTROLLERS_TAG)
-      .map(b => b.key);
+    const bindings = app.findByTag(REPOSITORIES_TAG).map(b => b.key);
     expect(bindings.sort()).to.eql(expectedBindings.sort());
   });
 
@@ -38,11 +36,11 @@ describe('controller booter integration tests', () => {
     );
     await sandbox.copyFile(
       resolve(__dirname, '../fixtures/multiple.artifact.js'),
-      'controllers/multiple.controller.js',
+      'repositories/multiple.repository.js',
     );
     await sandbox.copyFile(
       resolve(__dirname, '../fixtures/multiple.artifact.js.map'),
-      'controllers/multiple.artifact.js.map',
+      'repositories/multiple.artifact.js.map',
     );
 
     const BooterApp = require(resolve(SANDBOX_PATH, 'application.js'))

@@ -10,6 +10,7 @@ import {
   BootBindings,
   Bootstrapper,
   ControllerBooter,
+  RepositoryBooter,
 } from '../../index';
 
 describe('boot.component unit tests', () => {
@@ -22,12 +23,20 @@ describe('boot.component unit tests', () => {
     expect(bootstrapper).to.be.an.instanceOf(Bootstrapper);
   });
 
-  it('ControllerBooter is bound as a booter by default', async () => {
+  it('binds ControllerBooter as a booter by default', async () => {
     app.bind(BootBindings.BOOT_OPTIONS).to({projectRoot: __dirname});
     const ctrlBooter = await app.get(
       `${CoreBindings.BOOTER_PREFIX}.ControllerBooter`,
     );
     expect(ctrlBooter).to.be.an.instanceOf(ControllerBooter);
+  });
+
+  it('binds RepositoryBooter as a booter by default', async () => {
+    app.bind(BootBindings.BOOT_OPTIONS).to({project: __dirname});
+    const repositoryBooter = await app.get(
+      `${CoreBindings.BOOTER_PREFIX}.RepositoryBooter`,
+    );
+    expect(repositoryBooter).to.be.an.instanceOf(RepositoryBooter);
   });
 
   function getApp() {

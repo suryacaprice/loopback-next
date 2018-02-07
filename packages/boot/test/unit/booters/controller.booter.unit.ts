@@ -7,6 +7,7 @@ import {expect, TestSandbox} from '@loopback/testlab';
 import {Application, CoreBindings} from '@loopback/core';
 import {ControllerBooter, ControllerDefaults} from '../../../index';
 import {resolve} from 'path';
+import {resetSandbox} from '../../utils';
 
 describe('controller booter unit tests', () => {
   const SANDBOX_PATH = resolve(__dirname, '../../../.sandbox');
@@ -14,10 +15,10 @@ describe('controller booter unit tests', () => {
 
   let app: Application;
 
-  beforeEach(resetSandbox);
+  beforeEach(() => resetSandbox(sandbox));
   beforeEach(getApp);
 
-  it(`constructor uses ControllerDefaults for 'options' if none are given`, () => {
+  it(`uses ControllerDefaults for 'options' if none are given`, () => {
     const booterInst = new ControllerBooter({projectRoot: SANDBOX_PATH}, app);
     expect(booterInst.options).to.deepEqual(ControllerDefaults);
   });
@@ -61,9 +62,5 @@ describe('controller booter unit tests', () => {
 
   function getApp() {
     app = new Application();
-  }
-
-  async function resetSandbox() {
-    await sandbox.reset();
   }
 });
