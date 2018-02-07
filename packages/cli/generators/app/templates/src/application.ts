@@ -3,25 +3,34 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {Application, ApplicationConfig} from '@loopback/core';
-import {RestComponent, RestServer} from '@loopback/rest';
+import {Application, ApplicationConfig<% if (project.loopbackBoot) { %>, BootOptions<% } %>} from '@loopback/core';
+import {RestApplication, RestServer} from '@loopback/rest';
+<% if (project.loopbackBoot) { -%>
+import {BootComponent} from '@loopback/boot';
+<% } else {-%>
 import {PingController} from './controllers/ping.controller';
+<% } -%>
 import {MySequence} from './sequence';
 
-export class <%= project.applicationName %> extends Application {
+export class <%= project.applicationName %> extends RestApplication {
   constructor(options?: ApplicationConfig) {
     // Allow options to replace the defined components array, if desired.
-    options = Object.assign(
-      {},
-      {
-        components: [RestComponent],
-      },
-      options,
-    );
     super(options);
-    this.server(RestServer);
+<% if (project.loopbackBoot) { -%>
+    this.component(BootComponent);
+<% } else {-%>
     this.setupControllers();
+<% } -%>
   }
+
+<% if (project.loopbackBoot) { -%>
+  async boot(): Promise<void> {
+    const bootOptions: BootOptions = {
+      projectRoot: __dirname,
+    };
+    await super.boot(bootOptions);
+  }
+<% } -%>
 
   async start() {
     const server = await this.getServer(RestServer);
@@ -32,7 +41,9 @@ export class <%= project.applicationName %> extends Application {
     return await super.start();
   }
 
+<% if(!project.loopbackBoot) { -%>
   setupControllers() {
     this.controller(PingController);
   }
+<% } -%>
 }
