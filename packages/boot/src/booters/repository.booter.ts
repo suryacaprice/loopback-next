@@ -9,7 +9,7 @@ import {BootBindings} from '../keys';
 import {BaseArtifactBooter, ArtifactOptions} from './base-artifact.booter';
 
 /**
- * A class that extends BaseArtifactBooter to boot the 'Controller' artifact type.
+ * A class that extends BaseArtifactBooter to boot the 'Repository' artifact type.
  * Discovered controllers are bound using `app.controller()`.
  *
  * Supported phases: configure, discover, load
@@ -29,11 +29,17 @@ export class RepositoryBooter extends BaseArtifactBooter {
       console.warn(
         'app.repository() function is needed for RepositoryBooter. You can add it to your Application using RepositoryMixin from @loopback/repository.',
       );
+
+      /**
+       * If RepositoryMixin is not used and a `.repository()` function is not
+       * available, we change the methods to be empty so bootstrapper can
+       * still run without any side-effects of loading this Booter.
+       */
       this.configure = async () => {};
       this.discover = async () => {};
       this.load = async () => {};
     } else {
-      // Set Controller Booter Options if passed in via bootConfig
+      // Set Repository Booter Options if passed in via bootConfig
       this.options = bootConfig.repositories
         ? Object.assign({}, RepositoryDefaults, bootConfig.repositories)
         : Object.assign({}, RepositoryDefaults);
@@ -54,7 +60,7 @@ export class RepositoryBooter extends BaseArtifactBooter {
 }
 
 /**
- * Default ArtifactOptions for a ControllerBooter.
+ * Default ArtifactOptions for a RepositoryBooter.
  */
 export const RepositoryDefaults: ArtifactOptions = {
   dirs: ['repositories'],
