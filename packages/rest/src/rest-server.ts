@@ -221,7 +221,7 @@ export class RestServer extends Context implements Server {
       if (apiSpec.definitions) {
         this._httpHandler.registerApiDefinitions(apiSpec.definitions);
       }
-      this._httpHandler.registerController(ctor, apiSpec);
+      this._httpHandler.registerController(ctor, apiSpec, b);
     }
 
     for (const b of this.find('routes.*')) {
@@ -270,7 +270,7 @@ export class RestServer extends Context implements Server {
         );
       }
 
-      const route = new ControllerRoute(verb, path, spec, ctor);
+      const route = new ControllerRoute(verb, path, spec, ctor, undefined, b);
       this._httpHandler.registerRoute(route);
       return;
     }
