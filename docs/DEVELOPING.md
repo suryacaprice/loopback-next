@@ -9,6 +9,7 @@ This document describes how to develop modules living in loopback-next monorepo.
  - [API documentation](#api-documentation)
  - [Commit message guidelines](#commit-message-guidelines)
  - [Releasing new versions](#releasing-new-versions)
+ - [New package checklist](#new-package-checklist)
  - [How to test infrastructure changes](#how-to-test-infrastructure-changes)
 
 ## Setting up development environment
@@ -181,6 +182,15 @@ The `release` script will automatically perform the tasks for all packages:
 - Check lint (tslint and prettier) issues
 
 If all steps are successful, it prompts you to publish packages into npm repository.
+
+## New package checklist
+
+When adding (starting) a new package, make sure to complete all steps listed below.
+
+ - Update [MONOREPO.md](../MONOREPO.md) - insert a new table row to describe the new package, please keep the rows sorted by package name.
+ - Update [docs/apidocs.html](./docs/apidocs.html) - add a link to API docs for this new package.
+ - Update [CODEOWNERS](./CODEOWNERS) - add a new entry listing the primary maintainers (owners) of the new package
+ - Ask somebody from the IBM team (e.g. @bajtos, @raymondfeng or @kjdelisle) to add enlist the new package on http://apidocs.strongloop.com/
 
 ## How to test infrastructure changes
 
