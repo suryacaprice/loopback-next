@@ -4,12 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {Binding} from './binding';
-import {
-  isPromise,
-  BoundValue,
-  ValueOrPromise,
-  getDeepProperty,
-} from './value-promise';
+import {isPromiseLike, getDeepProperty} from './value-promise';
 import {ResolutionOptions, ResolutionSession} from './resolution-session';
 
 import {v1 as uuidv1} from 'uuid';
@@ -178,8 +173,8 @@ export class Context {
   }
 
   /**
-   * Get the value bound to the given key, optionally return a (deep) property
-   * of the bound value.
+   * Get the value bound to the given key, throw an error when no value was
+   * bound for the given key.
    *
    * @example
    *
@@ -197,22 +192,49 @@ export class Context {
    *
    * @param keyWithPath The binding key, optionally suffixed with a path to the
    *   (deeply) nested property to retrieve.
-   * @param optionsOrSession Options or session for resolution. An instance of
-   * `ResolutionSession` is accepted for backward compatibility.
    * @returns A promise of the bound value.
    */
-  get(
+  get<T>(keyWithPath: string): Promise<T>;
+
+  /**
+   * Get the value bound to the given key, optionally return a (deep) property
+   * of the bound value.
+   *
+   * @example
+   *
+   * ```ts
+   * // get "rest" property from the value bound to "config"
+   * // use "undefined" when not config was provided
+   * const config = await ctx.get('config#rest', {optional: true});
+   * ```
+   *
+   * @param keyWithPath The binding key, optionally suffixed with a path to the
+   *   (deeply) nested property to retrieve.
+   * @param optionsOrSession Options or session for resolution. An instance of
+   * `ResolutionSession` is accepted for backward compatibility.
+   * @returns A promise of the bound value, or a promise of undefined when
+   * the optional binding was not found.
+   */
+  get<T>(
     keyWithPath: string,
     optionsOrSession?: ResolutionOptions | ResolutionSession,
-  ): Promise<BoundValue> {
+  ): Promise<T | undefined>;
+
+  // Implementation
+  get<T>(
+    keyWithPath: string,
+    optionsOrSession?: ResolutionOptions | ResolutionSession,
+  ): Promise<T | undefined> {
     /* istanbul ignore if */
     if (debug.enabled) {
       debug('Resolving binding: %s', keyWithPath);
     }
     try {
-      return Promise.resolve(
-        this.getValueOrPromise(keyWithPath, optionsOrSession),
+      const valueOrPromiseLike = this.getValueOrPromise<T>(
+        keyWithPath,
+        optionsOrSession,
       );
+      return Promise.resolve<T | undefined>(valueOrPromiseLike);
     } catch (err) {
       return Promise.reject(err);
     }
@@ -242,20 +264,50 @@ export class Context {
    * `ResolutionSession` is accepted for backward compatibility.
    * @returns A promise of the bound value.
    */
-  getSync(
+  getSync<T>(keyWithPath: string): T;
+
+  /**
+   * Get the synchronous value bound to the given key, optionally
+   * return a (deep) property of the bound value.
+   *
+   * This method throws an error if the bound value requires async computation
+   * (returns a promise). You should never rely on sync bindings in production
+   * code.
+   *
+   * @example
+   *
+   * ```ts
+   * // get "rest" property from the value bound to "config"
+   * // use "undefined" when not config was provided
+   * const config = await ctx.getSync('config#rest', {optional: true});
+   * ```
+   *
+   * @param keyWithPath The binding key, optionally suffixed with a path to the
+   *   (deeply) nested property to retrieve.
+   * * @param optionsOrSession Options or session for resolution. An instance of
+   * `ResolutionSession` is accepted for backward compatibility.
+   * @returns The bound value, or undefined when an optional binding was not found.
+   */
+  getSync<T>(
     keyWithPath: string,
     optionsOrSession?: ResolutionOptions | ResolutionSession,
-  ): BoundValue {
+  ): T | undefined;
+
+  // Implementation
+  getSync<T>(
+    keyWithPath: string,
+    optionsOrSession?: ResolutionOptions | ResolutionSession,
+  ): T | undefined {
     /* istanbul ignore if */
     if (debug.enabled) {
       debug('Resolving binding synchronously: %s', keyWithPath);
     }
-    const valueOrPromise = this.getValueOrPromise(
+    const valueOrPromise = this.getValueOrPromise<T>(
       keyWithPath,
       optionsOrSession,
     );
 
-    if (isPromise(valueOrPromise)) {
+    if (isPromiseLike(valueOrPromise)) {
       throw new Error(
         `Cannot get ${keyWithPath} synchronously: the value is a promise`,
       );
@@ -326,16 +378,25 @@ export class Context {
    *   on how the binding was configured.
    * @internal
    */
-  getValueOrPromise(
+  getValueOrPromise<T>(
     keyWithPath: string,
     optionsOrSession?: ResolutionOptions | ResolutionSession,
-  ): ValueOrPromise<BoundValue> {
+  ): T | PromiseLike<T> | undefined {
+    // ^^^ Note that boundValue can be any Promise-like implementation,
+    // not necessarily the native Promise instance. As such, it may be
+    // missing newer APIs like Promise#catch() and cannot be casted
+    // directly to a Promise. Callers of this method should use
+    // Promise.resolve() to convert the result into a native Promise.
     const {key, path} = Binding.parseKeyWithPath(keyWithPath);
+
+    // backwards compatibility
     if (optionsOrSession instanceof ResolutionSession) {
       optionsOrSession = {session: optionsOrSession};
     }
+
     const binding = this.getBinding(key, optionsOrSession);
     if (binding == null) return undefined;
+
     const boundValue = binding.getValue(
       this,
       optionsOrSession && optionsOrSession.session,
@@ -344,11 +405,11 @@ export class Context {
       return boundValue;
     }
 
-    if (isPromise(boundValue)) {
-      return boundValue.then(v => getDeepProperty(v, path));
+    if (isPromiseLike(boundValue)) {
+      return boundValue.then(v => getDeepProperty(v, path) as T);
     }
 
-    return getDeepProperty(boundValue, path);
+    return getDeepProperty(boundValue, path) as T;
   }
 
   /**
