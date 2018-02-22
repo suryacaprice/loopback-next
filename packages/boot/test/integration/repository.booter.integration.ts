@@ -12,23 +12,23 @@ describe('controller booter integration tests', () => {
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
   // Remnants from Refactor -- need to add these to core
-  const CONTROLLERS_PREFIX = 'controllers';
-  const CONTROLLERS_TAG = 'controller';
+  const REPOSITORIES_PREFIX = 'repositories';
+  const REPOSITORIES_TAG = 'repository';
 
   let app: BooterApp;
 
   beforeEach(() => sandbox.reset());
   beforeEach(getApp);
 
-  it('boots controllers when app.boot() is called', async () => {
+  it('boots repositories when app.boot() is called', async () => {
     const expectedBindings = [
-      `${CONTROLLERS_PREFIX}.ControllerOne`,
-      `${CONTROLLERS_PREFIX}.ControllerTwo`,
+      `${REPOSITORIES_PREFIX}.ControllerOne`,
+      `${REPOSITORIES_PREFIX}.ControllerTwo`,
     ];
 
     await app.boot();
 
-    const bindings = app.findByTag(CONTROLLERS_TAG).map(b => b.key);
+    const bindings = app.findByTag(REPOSITORIES_TAG).map(b => b.key);
     expect(bindings.sort()).to.eql(expectedBindings.sort());
   });
 
@@ -39,11 +39,11 @@ describe('controller booter integration tests', () => {
     );
     await sandbox.copyFile(
       resolve(__dirname, '../fixtures/multiple.artifact.js'),
-      'controllers/multiple.controller.js',
+      'repositories/multiple.repository.js',
     );
     await sandbox.copyFile(
       resolve(__dirname, '../fixtures/multiple.artifact.js.map'),
-      'controllers/multiple.artifact.js.map',
+      'repositories/multiple.artifact.js.map',
     );
 
     const MyApp = require(resolve(SANDBOX_PATH, 'application.js')).BooterApp;

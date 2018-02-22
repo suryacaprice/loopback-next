@@ -6,8 +6,6 @@
 import {Class} from './common-types';
 import {Repository} from './repository';
 
-// tslint:disable:no-any
-
 /**
  * A mixin class for Application that creates a .repository()
  * function to register a repository automatically. Also overrides
@@ -18,9 +16,11 @@ import {Repository} from './repository';
  * class MyApplication extends RepositoryMixin(Application) {}
  * ```
  */
+// tslint:disable-next-line:no-any
 export function RepositoryMixin<T extends Class<any>>(superClass: T) {
   return class extends superClass {
     // A mixin class has to take in a type any[] argument!
+    // tslint:disable-next-line:no-any
     constructor(...args: any[]) {
       super(...args);
     }
@@ -52,9 +52,12 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * app.repository(NoteRepo);
      * ```
      */
+    // tslint:disable-next-line:no-any
     repository(repo: Class<Repository<any>>) {
       const repoKey = `repositories.${repo.name}`;
-      this.bind(repoKey).toClass(repo);
+      this.bind(repoKey)
+        .toClass(repo)
+        .tag('repository');
     }
 
     /**
@@ -77,7 +80,7 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      * app.component(ProductComponent);
      * ```
      */
-    public component(component: Class<any>) {
+    public component(component: Class<{}>) {
       super.component(component);
       this.mountComponentRepository(component);
     }
@@ -89,7 +92,7 @@ export function RepositoryMixin<T extends Class<any>>(superClass: T) {
      *
      * @param component The component to mount repositories of
      */
-    mountComponentRepository(component: Class<any>) {
+    mountComponentRepository(component: Class<{}>) {
       const componentKey = `components.${component.name}`;
       const compInstance = this.getSync(componentKey);
 
