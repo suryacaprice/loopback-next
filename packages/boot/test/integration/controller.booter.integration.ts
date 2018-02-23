@@ -17,7 +17,7 @@ describe('controller booter integration tests', () => {
 
   let app: ControllerBooterApp;
 
-  beforeEach(resetSandbox);
+  beforeEach(async () => await sandbox.reset());
   beforeEach(getApp);
 
   it('boots controllers when app.boot() is called', async () => {
@@ -50,9 +50,5 @@ describe('controller booter integration tests', () => {
       .ControllerBooterApp;
 
     app = new BooterApp();
-  }
-
-  async function resetSandbox() {
-    await sandbox.reset();
   }
 });

@@ -13,7 +13,7 @@ describe('controller booter acceptance tests', () => {
   const SANDBOX_PATH = resolve(__dirname, '../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
-  beforeEach(resetSandbox);
+  beforeEach(async () => await sandbox.reset());
   beforeEach(getApp);
 
   afterEach(stopApp);
@@ -56,9 +56,5 @@ describe('controller booter acceptance tests', () => {
     } catch (err) {
       console.log(`Stopping the app threw an error: ${err}`);
     }
-  }
-
-  async function resetSandbox() {
-    await sandbox.reset();
   }
 });
