@@ -1,26 +1,29 @@
 // Copyright IBM Corp. 2018. All Rights Reserved.
-// Node module: @loopback/openapi-v2
+// Node module: @loopback/openapi-v3
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {MetadataInspector, DecoratorFactory} from '@loopback/context';
+import {
+  MetadataInspector,
+  DecoratorFactory,
+} from '@loopback/context';
 
 import {
   OperationObject,
   ParameterObject,
   PathsObject,
-  DefinitionsObject,
-} from '@loopback/openapi-spec';
-
+  ComponentsObject,
+  RequestBodyObject,
+} from '@loopback/openapi-v3-types';
 import {getJsonSchema} from '@loopback/repository-json-schema';
-import {OAI2Keys} from './keys';
-import {jsonToSchemaObject} from './json-to-schema';
-import {isReadableStream} from './generate-schema';
+import {OAI3Keys} from './Keys';
+import {jsonToSchemaObject} from './';
 import * as _ from 'lodash';
 
-const debug = require('debug')('loopback:rest:router:metadata');
+const debug = require('debug')('loopback:openapi3:metadata');
 
 // tslint:disable:no-any
+
 export interface ControllerSpec {
   /**
    * The base path on which the Controller API is served.
@@ -35,9 +38,9 @@ export interface ControllerSpec {
   paths: PathsObject;
 
   /**
-   * JSON Schema definitions of models used by the controller
+   * OpenAPI components.schemas generated from model metadata
    */
-  definitions?: DefinitionsObject;
+  components?: ComponentsObject;
 }
 
 /**
@@ -57,7 +60,7 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
   debug(`Retrieving OpenAPI specification for controller ${constructor.name}`);
 
   let spec = MetadataInspector.getClassMetadata<ControllerSpec>(
-    OAI2Keys.CLASS_KEY,
+    OAI3Keys.CLASS_KEY,
     constructor,
   );
   if (spec) {
@@ -69,7 +72,7 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
 
   let endpoints =
     MetadataInspector.getAllMethodMetadata<RestEndpoint>(
-      OAI2Keys.METHODS_KEY,
+      OAI3Keys.METHODS_KEY,
       constructor.prototype,
     ) || {};
 
@@ -101,23 +104,13 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
 
     debug('  processing parameters for method %s', op);
     let params = MetadataInspector.getAllParameterMetadata<ParameterObject>(
-      OAI2Keys.PARAMETERS_KEY,
+      OAI3Keys.PARAMETERS_KEY,
       constructor.prototype,
       op,
     );
-    if (params == null) {
-      params = MetadataInspector.getMethodMetadata<ParameterObject[]>(
-        OAI2Keys.METHODS_WITH_PARAMETERS_KEY,
-        constructor.prototype,
-        op,
-      );
-    }
+
     debug('  parameters for method %s: %j', op, params);
     if (params != null) {
-      const bodyParams = params.filter(p => p && p.in === 'body');
-      if (bodyParams.length > 1) {
-        throw new Error('More than one body parameters found: ' + bodyParams);
-      }
       params = DecoratorFactory.cloneDeep(params);
       /**
        * If a controller method uses dependency injection, the parameters
@@ -133,6 +126,29 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
        */
       operationSpec.parameters = params.filter(p => p != null);
     }
+
+    debug('  processing requestBody for method %s', op);
+    let requestBodies = MetadataInspector.getAllParameterMetadata<
+      RequestBodyObject
+    >(OAI3Keys.REQUEST_BODY_KEY, constructor.prototype, op);
+
+    if (requestBodies != null)
+      requestBodies = requestBodies.filter(p => p != null);
+    let requestBody: RequestBodyObject;
+
+    if (requestBodies) {
+      if (requestBodies.length > 1)
+        throw new Error(
+          'An operation should only have one parameter decorated by @requestBody',
+        );
+
+      requestBody = requestBodies[0];
+      debug('  requestBody for method %s: %j', op, requestBody);
+      if (requestBody) {
+        operationSpec.requestBody = requestBody;
+      }
+    }
+
     operationSpec['x-operation-name'] = op;
 
     if (!spec.paths[path]) {
@@ -148,37 +164,42 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
     spec.paths[path][verb] = operationSpec;
 
     debug(`  inferring schema object for method %s`, op);
-    const paramTypes = MetadataInspector.getDesignTypeForMethod(
+    const opMetadata = MetadataInspector.getDesignTypeForMethod(
       constructor.prototype,
       op,
-    ).parameterTypes;
+    );
+    const paramTypes = opMetadata.parameterTypes;
 
     const isComplexType = (ctor: Function) =>
-      !_.includes([String, Number, Boolean, Array, Object], ctor) &&
-      !isReadableStream(ctor);
+      !_.includes([String, Number, Boolean, Array, Object], ctor);
 
     for (const p of paramTypes) {
       if (isComplexType(p)) {
-        if (!spec.definitions) {
-          spec.definitions = {};
+        if (!spec.components) {
+          spec.components = {};
+        }
+        if (!spec.components.schemas) {
+          spec.components.schemas = {};
         }
         const jsonSchema = getJsonSchema(p);
         const openapiSchema = jsonToSchemaObject(jsonSchema);
-
         if (openapiSchema.definitions) {
           for (const key in openapiSchema.definitions) {
-            spec.definitions[key] = openapiSchema.definitions[key];
+            spec.components.schemas[key] = openapiSchema.definitions[key];
           }
           delete openapiSchema.definitions;
         }
 
-        spec.definitions[p.name] = openapiSchema;
+        spec.components.schemas[p.name] = openapiSchema;
         break;
       }
     }
+    // const returnType = opMetadata.returnType;
+    // buildResponsesSpec(returnType, spec);
   }
   return spec;
 }
+
 
 /**
  * Get the controller spec for the given class
@@ -186,14 +207,14 @@ function resolveControllerSpec(constructor: Function): ControllerSpec {
  */
 export function getControllerSpec(constructor: Function): ControllerSpec {
   let spec = MetadataInspector.getClassMetadata<ControllerSpec>(
-    OAI2Keys.CONTROLLER_SPEC_KEY,
+    OAI3Keys.CONTROLLER_SPEC_KEY,
     constructor,
     {ownMetadataOnly: true},
   );
   if (!spec) {
     spec = resolveControllerSpec(constructor);
     MetadataInspector.defineMetadata(
-      OAI2Keys.CONTROLLER_SPEC_KEY,
+      OAI3Keys.CONTROLLER_SPEC_KEY,
       spec,
       constructor,
     );
