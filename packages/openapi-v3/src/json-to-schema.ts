@@ -1,10 +1,10 @@
 // Copyright IBM Corp. 2018. All Rights Reserved.
-// Node module: @loopback/openapi-v2
+// Node module: @loopback/openapi-v3
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
 import {JsonDefinition} from '@loopback/repository-json-schema';
-import {SchemaObject, ExtensionValue} from '@loopback/openapi-spec';
+import {SchemaObject, ExtensionValue} from '@loopback/openapi-v3-types';
 import * as _ from 'lodash';
 
 export function jsonToSchemaObject(jsonDef: JsonDefinition): SchemaObject {
@@ -73,6 +73,13 @@ export function jsonToSchemaObject(jsonDef: JsonDefinition): SchemaObject {
         }
         result.enum = newEnum;
 
+        break;
+      }
+      case '$ref': {
+        result.$ref = json.$ref.replace(
+          '#/definitions',
+          '#/components/schemas',
+        );
         break;
       }
       default: {
