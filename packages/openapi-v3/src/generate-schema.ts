@@ -1,66 +1,57 @@
 // Copyright IBM Corp. 2018. All Rights Reserved.
-// Node module: @loopback/openapi-v2
+// Node module: @loopback/openapi-v3
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {ParameterType, SchemaObject} from '@loopback/openapi-spec';
-import * as stream from 'stream';
+import {SchemaObject} from '@loopback/openapi-v3-types';
 
-/**
- * Get openapi type name for a JavaScript type
- * @param type JavaScript type
- */
-export function getTypeForNonBodyParam(type: Function): ParameterType {
-  if (type === String) {
-    return 'string';
-  } else if (type === Number) {
-    return 'number';
-  } else if (type === Boolean) {
-    return 'boolean';
-  } else if (type === Array) {
-    return 'array';
-  } else if (isReadableStream(type)) {
-    return 'file';
-  }
-  return 'string';
+interface TypeAndFormat {
+  type?: string;
+  format?: string;
 }
-
 /**
- * Get openapi schema for a JavaScript type for a body parameter
- * @param type JavaScript type
+ * Generate the `type` and `format` property in a Schema Object according to a
+ * parameter's type.
+ * `type` and `format` will be preserved if provided in `schema`
+ *
+ * @param type The JavaScript type of a parameter
+ * @param schema The schema object provided in an parameter object
  */
-export function getSchemaForBodyParam(type: Function): SchemaObject {
-  const schema: SchemaObject = {};
-  let typeName;
+export function getSchemaForParam(
+  type: Function,
+  schema: SchemaObject,
+): SchemaObject {
+  // preserve `type` and `format` provided by user
+  if (schema.type && schema.format) return schema;
+
+  let typeAndFormat: TypeAndFormat = {};
   if (type === String) {
-    typeName = 'string';
+    typeAndFormat.type = 'string';
   } else if (type === Number) {
-    typeName = 'number';
+    typeAndFormat.type = 'number';
   } else if (type === Boolean) {
-    typeName = 'boolean';
+    typeAndFormat.type = 'boolean';
   } else if (type === Array) {
     // item type cannot be inspected
-    typeName = 'array';
-  } else if (isReadableStream(type)) {
-    typeName = 'file';
+    typeAndFormat.type = 'array';
   } else if (type === Object) {
-    typeName = 'object';
+    typeAndFormat.type = 'object';
   }
-  if (typeName) {
-    schema.type = typeName;
-  } else {
-    schema.$ref = '#/definitions/' + type.name;
-  }
+
+  if (typeAndFormat.type && !schema.type) schema.type = typeAndFormat.type;
+  if (typeAndFormat.format && !schema.format)
+    schema.format = typeAndFormat.format;
+
   return schema;
 }
 
 /**
- * Check if the given type is `stream.Readable` or a subclasses of
- * `stream.Readable`
- * @param type JavaScript type function
+ * Get OpenAPI Schema for a JavaScript type for a body parameter
+ * @param type The JavaScript type of an argument deccorated by @requestBody
  */
-export function isReadableStream(type: Object): boolean {
-  if (typeof type !== 'function') return false;
-  if (type === stream.Readable) return true;
-  return isReadableStream(Object.getPrototypeOf(type));
+export function getSchemaForRequestBody(type: Function): SchemaObject {
+  let generatedSchema = getSchemaForParam(type, {});
+  if (!generatedSchema.type)
+    generatedSchema.$ref = '#/components/schemas/' + type.name;
+  return generatedSchema;
 }
