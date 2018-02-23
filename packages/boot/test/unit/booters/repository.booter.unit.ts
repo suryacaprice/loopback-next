@@ -21,7 +21,7 @@ describe('repository booter unit tests', () => {
   let app: RepoApp;
   let stub: sinon.SinonStub;
 
-  beforeEach(() => sandbox.reset());
+  beforeEach(async () => await sandbox.reset());
   beforeEach(getApp);
   before(createStub);
   after(restoreStub);
