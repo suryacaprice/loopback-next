@@ -26,7 +26,7 @@ describe('repository booter unit tests', () => {
   before(createStub);
   after(restoreStub);
 
-  it('gives a warning if called on a app without RepositoryMixin', async () => {
+  it('gives a warning if called on an app without RepositoryMixin', async () => {
     const normalApp = new Application();
     // tslint:disable-next-line:no-unused-expression
     new RepositoryBooter(normalApp, SANDBOX_PATH);

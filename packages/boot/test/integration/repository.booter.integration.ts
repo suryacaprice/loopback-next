@@ -7,7 +7,7 @@ import {expect, TestSandbox} from '@loopback/testlab';
 import {resolve} from 'path';
 import {BooterApp} from '../fixtures/application';
 
-describe('controller booter integration tests', () => {
+describe('repository booter integration tests', () => {
   const SANDBOX_PATH = resolve(__dirname, '../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 

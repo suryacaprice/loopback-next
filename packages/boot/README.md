@@ -50,17 +50,31 @@ List of Options available on BootOptions Object.
 ### ArtifactOptions
 
 |Options|Type|Description|
-|-|-|-|-|
+|-|-|-|
 |`dirs`|`string \| string[]`|Paths relative to projectRoot to look in for Artifact|
 |`extensions`|`string \| string[]`|File extensions to match for Artifact|
-|`nested`|`boolean`|`true`|Look in nested directories in `dirs` for Artifact|
-|`glob`|`string`||A `glob` pattern string. This takes precendence over above 3 options (which are used to make a glob pattern).|
+|`nested`|`boolean`|Look in nested directories in `dirs` for Artifact|
+|`glob`|`string`|A `glob` pattern string. This takes precendence over above 3 options (which are used to make a glob pattern).|
 
 ### BootExecOptions
 
 **Experimental support. May be removed or changed in a non-compatible way in future without warning**
 
-To use `BootExecOptions` you must directly call `bootstrapper.boot()` instead of `app.boot()`.
+To use `BootExecOptions` you must directly call `bootstrapper.boot()` and pass in `BootExecOptions`.
+`app.boot()` provided by `BootMixin` does not take any paramters.
+
+```ts
+const bootstrapper: Bootstrapper = await this.get(BootBindings.BOOTSTRAPPER_KEY);
+const execOptions: BootExecOptions = {
+  booters: [MyBooter1, MyBooter2],
+  filter: {
+    phases: ['configure', 'discover']
+  }
+};
+
+const ctx = bootstrapper.boot(execOptions);
+```
+
 You can pass in the `BootExecOptions` object with the following properties:
 
 | Property         | Type                    | Description                                      |
