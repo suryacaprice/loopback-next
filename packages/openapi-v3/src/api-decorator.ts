@@ -1,11 +1,11 @@
 // Copyright IBM Corp. 2018. All Rights Reserved.
-// Node module: @loopback/openapi-v2
+// Node module: @loopback/openapi-v3
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {ControllerSpec} from './controller-spec';
+import {ControllerSpec} from './';
 import {ClassDecoratorFactory} from '@loopback/context';
-import {OAI2Keys} from './keys';
+import {OAI3Keys} from './keys';
 
 /**
  * Decorate the given Controller constructor with metadata describing
@@ -26,7 +26,7 @@ import {OAI2Keys} from './keys';
  */
 export function api(spec: ControllerSpec) {
   return ClassDecoratorFactory.createDecorator<ControllerSpec>(
-    OAI2Keys.CLASS_KEY,
+    OAI3Keys.CLASS_KEY,
     spec,
   );
 }
