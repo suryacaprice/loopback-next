@@ -11,7 +11,7 @@ describe('booter-utils unit tests', () => {
   const SANDBOX_PATH = resolve(__dirname, '../../../.sandbox');
   const sandbox = new TestSandbox(SANDBOX_PATH);
 
-  beforeEach(async () => await sandbox.reset());
+  beforeEach(() => sandbox.reset());
 
   describe('discoverFiles()', () => {
     beforeEach(setupSandbox);

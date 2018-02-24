@@ -17,7 +17,7 @@ describe('controller booter unit tests', () => {
 
   let app: Application;
 
-  beforeEach(async () => await sandbox.reset());
+  beforeEach(() => sandbox.reset());
   beforeEach(getApp);
 
   it(`constructor uses ControllerDefaults for 'options' if none are given`, () => {

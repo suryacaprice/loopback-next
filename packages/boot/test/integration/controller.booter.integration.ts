@@ -17,7 +17,7 @@ describe('controller booter integration tests', () => {
 
   let app: ControllerBooterApp;
 
-  beforeEach(async () => await sandbox.reset());
+  beforeEach(() => sandbox.reset());
   beforeEach(getApp);
 
   it('boots controllers when app.boot() is called', async () => {
