@@ -3,10 +3,10 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {OperationObject} from '@loopback/openapi-spec';
+import {OperationObject} from '@loopback/openapi-v3-types';
 import {MethodDecoratorFactory} from '@loopback/context';
 import {RestEndpoint} from './controller-spec';
-import {OAI2Keys} from './keys';
+import {OAI3Keys} from './keys';
 
 /**
  * Expose a Controller method as a REST API operation
@@ -78,7 +78,7 @@ export function del(path: string, spec?: OperationObject) {
  */
 export function operation(verb: string, path: string, spec?: OperationObject) {
   return MethodDecoratorFactory.createDecorator<Partial<RestEndpoint>>(
-    OAI2Keys.METHODS_KEY,
+    OAI3Keys.METHODS_KEY,
     {
       verb,
       path,
