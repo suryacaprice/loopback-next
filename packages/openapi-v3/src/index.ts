@@ -5,6 +5,8 @@
 
 export * from './api-decorator';
 export * from './controller-spec';
+export * from './generate-schema';
 export * from './json-to-schema';
-export * from './parameter-decorator';
 export * from './operation-decorator';
+export * from './parameter-decorator';
+export * from './request-body-decorator';
