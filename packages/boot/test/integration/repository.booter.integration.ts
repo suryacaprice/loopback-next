@@ -17,7 +17,7 @@ describe('repository booter integration tests', () => {
 
   let app: BooterApp;
 
-  beforeEach(async () => await sandbox.reset());
+  beforeEach(() => sandbox.reset());
   beforeEach(getApp);
 
   it('boots repositories when app.boot() is called', async () => {
