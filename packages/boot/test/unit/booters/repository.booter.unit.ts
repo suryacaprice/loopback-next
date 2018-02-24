@@ -57,8 +57,8 @@ describe('repository booter unit tests', () => {
 
   it('binds repositories during the load phase', async () => {
     const expected = [
-      `${REPOSITORIES_PREFIX}.ControllerOne`,
-      `${REPOSITORIES_PREFIX}.ControllerTwo`,
+      `${REPOSITORIES_PREFIX}.ArtifactOne`,
+      `${REPOSITORIES_PREFIX}.ArtifactTwo`,
     ];
     await sandbox.copyFile(
       resolve(__dirname, '../../fixtures/multiple.artifact.js'),

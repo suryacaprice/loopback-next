@@ -22,8 +22,8 @@ describe('repository booter integration tests', () => {
 
   it('boots repositories when app.boot() is called', async () => {
     const expectedBindings = [
-      `${REPOSITORIES_PREFIX}.ControllerOne`,
-      `${REPOSITORIES_PREFIX}.ControllerTwo`,
+      `${REPOSITORIES_PREFIX}.ArtifactOne`,
+      `${REPOSITORIES_PREFIX}.ArtifactTwo`,
     ];
 
     await app.boot();

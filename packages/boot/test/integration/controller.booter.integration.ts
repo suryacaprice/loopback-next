@@ -22,8 +22,8 @@ describe('controller booter integration tests', () => {
 
   it('boots controllers when app.boot() is called', async () => {
     const expectedBindings = [
-      `${CONTROLLERS_PREFIX}.ControllerOne`,
-      `${CONTROLLERS_PREFIX}.ControllerTwo`,
+      `${CONTROLLERS_PREFIX}.ArtifactOne`,
+      `${CONTROLLERS_PREFIX}.ArtifactTwo`,
     ];
 
     await app.boot();
